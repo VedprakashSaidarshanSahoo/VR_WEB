@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stereoscopic View with One iFrame</title>
+    <title>Stereoscopic View iFrame</title>
     <style>
         body {
             margin: 0;
@@ -17,8 +17,6 @@
             display: flex;
             width: 100%;
             height: 100%;
-            position: relative;
-            overflow: hidden;
         }
         .iframe-container {
             flex: 1;
@@ -26,10 +24,9 @@
             overflow: hidden;
         }
         iframe {
-            width: 200%; /* Double width to cover both sides */
+            width: 100%;
             height: 100%;
             border: none;
-            transform: translateX(-50%); /* Center the iframe */
         }
     </style>
 </head>
@@ -37,32 +34,41 @@
 
 <div class="container">
     <div class="iframe-container">
-        <iframe id="iframe" src="https://example.com" allowfullscreen></iframe>
+        <iframe id="iframe1" src="https://example.com" allowfullscreen></iframe>
+    </div>
+    <div class="iframe-container">
+        <iframe id="iframe2" src="https://example.com" allowfullscreen></iframe>
     </div>
 </div>
 
 <script>
-    // To sync events if needed, you can use this function
-    const iframe = document.getElementById('iframe');
+    // Function to synchronize the two iframes
+    function syncIframes() {
+        const iframe1 = document.getElementById('iframe1');
+        const iframe2 = document.getElementById('iframe2');
 
-    // Example function to synchronize input and clicks
-    function syncInputAndClicks() {
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        // Get the contentDocument of the first iframe
+        const doc1 = iframe1.contentDocument || iframe1.contentWindow.document;
 
-        doc.addEventListener('input', (event) => {
-            // Logic to handle input synchronization
-            console.log('Input event:', event.target.value);
+        // Sync inputs and clicks from the first iframe to the second iframe
+        doc1.addEventListener('input', (event) => {
+            iframe2.contentWindow.document.activeElement.value = event.target.value;
         });
 
-        doc.addEventListener('click', (event) => {
-            // Logic to handle click synchronization
-            console.log('Click event:', event.target.tagName);
+        doc1.addEventListener('click', (event) => {
+            // Get the clicked element
+            const target = event.target;
+            // Simulate the click in the second iframe
+            const iframe2Target = iframe2.contentWindow.document.querySelector(target.tagName);
+            if (iframe2Target) {
+                iframe2Target.click();
+            }
         });
     }
 
-    // Wait for the iframe to load
-    iframe.onload = function() {
-        syncInputAndClicks();
+    // Wait for iframes to load
+    window.onload = function() {
+        syncIframes();
     };
 </script>
 
